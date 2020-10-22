@@ -1,22 +1,15 @@
 import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
-
+import axios from 'axios'
 const initialState = {
-  image: "",
+  image: [],
   status: "idle",
   error: null,
 }; //Here we will call the API
-export const fetchImages = createAsyncThunk("images/dir", async () => {
-  console.log("fetchpost was dispatched");
-  fetch("http://localhost:5000/images/dir")
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Data:", data);
-      return data;
-    })
-    .catch((err) => console.log(err));
-});
+let data
+export const fetchImages = createAsyncThunk("images/fetchImages", async () => {
+  const res = await axios.get("https://jsonplaceholder.typicode.com/photos")
+  return res
+})
 export const panoramaSlice = createSlice({
   name: "panorama",
   initialState,
@@ -38,8 +31,22 @@ export const panoramaSlice = createSlice({
       state.image =
         "Here we need an image path to load it with the pano package";
     },
-  },
-});
+    extraReducers: {
+      [fetchImages.pending]: (state, action) => {
+        state.status = 'loading'
+      },
+      [fetchImages.fulfilled]: (state, action) => {
+        state.status = 'succeeded'
+        //Add the fetched data to the state
+        state.image = state.image.concat(action.payload)
+      },
+      [fetchImages.rejected]: (state, action) => {
+        state.status = "failed"
+        state.error = action.error.message
+      }
+    }
+  }
+})
 
 export const {
   increment,
