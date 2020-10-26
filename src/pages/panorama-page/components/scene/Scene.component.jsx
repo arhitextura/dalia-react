@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./scene.module.scss";
 import * as THREE from "three";
-import RefTest from './reftest'
+import RefTest from "./reftest";
 import {
   CSS2DRenderer,
   CSS2DObject,
@@ -13,13 +13,32 @@ import { PerspectiveCamera, Vector2, Vector3 } from "three";
 class Scene extends React.Component {
   constructor() {
     super();
-    this.state={}
+    this.state = {};
     this.mount = React.createRef();
     this.scene2d = React.createRef();
-    this.pos={};
+    this.renderer = new THREE.WebGLRenderer();
+    this.toScreenPosition = this.toScreenPosition.bind(this);
   }
-  
-  
+  toScreenPosition = (obj, camera) => {
+    var vector = new THREE.Vector3();
+
+    var widthHalf = 0.5 * this.renderer.getContext().canvas.width;
+    var heightHalf = 0.5 * this.renderer.getContext().canvas.height;
+
+    obj.updateMatrixWorld();
+    vector.setFromMatrixPosition(obj.matrixWorld);
+    vector.project(camera);
+
+    vector.x = vector.x * widthHalf + widthHalf;
+    vector.y = -(vector.y * heightHalf) + heightHalf;
+    console.log(`X: ${vector.x} - X: ${vector.y}`);
+    // this.setState({posX:vector.x, posY:vector.y})
+    return {
+      x: vector.x,
+      y: vector.y,
+    };
+  };
+
   componentDidMount() {
     let scene = new THREE.Scene();
     let camera = new PerspectiveCamera(
@@ -73,11 +92,11 @@ class Scene extends React.Component {
 
     //RENDER ENGINES
     // 3D Renderer
-    const renderer = new THREE.WebGLRenderer();
-    const labelRenderer = new CSS2DRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    this.mount.current.appendChild(renderer.domElement);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.mount.current.appendChild(this.renderer.domElement);
+    // const renderer = new THREE.WebGLRenderer();
     //CSS2D Renderer
+    const labelRenderer = new CSS2DRenderer();
     labelRenderer.setSize(window.innerWidth, window.innerHeight);
     labelRenderer.domElement.style.position = "absolute";
     labelRenderer.domElement.style.top = "0px";
@@ -96,36 +115,6 @@ class Scene extends React.Component {
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
-    //Empty Object
-    /**
-   * 
-   * @param {*} obj 
-   * @param {*} camera 
-   * @param {*} _renderer 
-   */
-  function toScreenPosition(obj, camera){
-    var vector = new THREE.Vector3();
-
-    var widthHalf = 0.5 * renderer.getContext().canvas.width;
-    var heightHalf = 0.5 * renderer.getContext().canvas.height;
-
-    obj.updateMatrixWorld();
-    vector.setFromMatrixPosition(obj.matrixWorld);
-    vector.project(camera);
-
-    vector.x = vector.x * widthHalf + widthHalf;
-    vector.y = -(vector.y * heightHalf) + heightHalf;
-    console.log(`X: ${vector.x} - X: ${vector.y}`)
-    this.setState({posX:vector.x, posY:vector.y})
-    return {
-      x: vector.x,
-      y: vector.y,
-    };
-  }
-    const obj = new THREE.Object3D();
-    obj.name = "LabelHolder";
-    obj.position.set(10,0,0)
-    scene.add(obj);
     //Label
     const moonDiv = document.createElement("div");
     moonDiv.className = "label";
@@ -136,7 +125,14 @@ class Scene extends React.Component {
     moonLabel.position.set(1, 1, 1);
     sphere.add(moonLabel);
 
+    //Empty OBJECT
+    const obj = new THREE.Object3D();
+    obj.name = "LabelHolder";
+    obj.position.set(10, 0, 0);
+    scene.add(obj);
+
     const animate = function () {
+      console.log("Animate-This", this)
       requestAnimationFrame(animate);
 
       if (isUserInteracting === false) {
@@ -152,11 +148,10 @@ class Scene extends React.Component {
       camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
       moonLabel.position.set(1, 1, 1);
       camera.lookAt(camera.target);
+      console.log("OBJECT:", obj);
+      this.toScreenPosition(obj, camera);
 
-      toScreenPosition(obj, camera);
-      
-
-      renderer.render(scene, camera);
+      this.renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
     };
 
