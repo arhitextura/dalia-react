@@ -6,8 +6,8 @@ import RefTest from "./reftest";
 import {
   CSS2DRenderer,
   CSS2DObject,
-} from "../../../../THREE/examples/jsm/renderers/CSS2DRenderer";
-import { OrbitControls } from "../../../../THREE/examples/jsm/controls/OrbitControls";
+} from "three/examples/jsm/renderers/CSS2DRenderer";
+// import { OrbitControls } from "../../../../THREE/examples/jsm/controls/OrbitControls";
 import { PerspectiveCamera, Vector2, Vector3 } from "three";
 
 class Scene extends React.Component {
@@ -16,30 +16,10 @@ class Scene extends React.Component {
     this.state = {};
     this.mount = React.createRef();
     this.scene2d = React.createRef();
-    this.renderer = new THREE.WebGLRenderer();
-    this.toScreenPosition = this.toScreenPosition.bind(this);
   }
-  toScreenPosition = (obj, camera) => {
-    var vector = new THREE.Vector3();
-
-    var widthHalf = 0.5 * this.renderer.getContext().canvas.width;
-    var heightHalf = 0.5 * this.renderer.getContext().canvas.height;
-
-    obj.updateMatrixWorld();
-    vector.setFromMatrixPosition(obj.matrixWorld);
-    vector.project(camera);
-
-    vector.x = vector.x * widthHalf + widthHalf;
-    vector.y = -(vector.y * heightHalf) + heightHalf;
-    console.log(`X: ${vector.x} - X: ${vector.y}`);
-    // this.setState({posX:vector.x, posY:vector.y})
-    return {
-      x: vector.x,
-      y: vector.y,
-    };
-  };
 
   componentDidMount() {
+    console.log(this);
     let scene = new THREE.Scene();
     let camera = new PerspectiveCamera(
       75,
@@ -92,8 +72,9 @@ class Scene extends React.Component {
 
     //RENDER ENGINES
     // 3D Renderer
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.mount.current.appendChild(this.renderer.domElement);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    this.mount.current.appendChild(renderer.domElement);
     // const renderer = new THREE.WebGLRenderer();
     //CSS2D Renderer
     const labelRenderer = new CSS2DRenderer();
@@ -115,6 +96,36 @@ class Scene extends React.Component {
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
+    //Empty OBJECT
+    const objGeometry = new THREE.SphereBufferGeometry(1, 15, 15);
+    objGeometry.scale(1, 1, 1);
+    const objMaterial = new THREE.MeshBasicMaterial({
+      color:0x00FF00,
+      wireframe: false,
+    });
+    const obj = new THREE.Mesh(objGeometry, objMaterial);
+    obj.name = "LabelHolder";
+    obj.position.set(10, 0, 10);
+    scene.add(obj);
+
+    const toScreenPosition = (obj, camera) => {
+      let {x, y, z} = obj.position;
+      var objVector = new THREE.Vector3(x,y,z);
+
+      var widthHalf = 0.5 * renderer.getContext().canvas.width;
+      var heightHalf = 0.5 * renderer.getContext().canvas.height;
+
+      if ( scene.autoUpdate === true ) scene.updateMatrixWorld();
+	  	if ( camera.parent === null ) camera.updateMatrixWorld();
+      let vector = objVector.project(camera)
+      const visibility = ( obj.visible && vector.z >= - 1 && vector.z <= 1 ) ? '' : 'none';
+      
+      vector.x = vector.x * widthHalf + widthHalf;
+      vector.y = -vector.y * heightHalf + heightHalf;
+      console.log(`X: ${vector.x} ==== Y:${vector.y}`);
+      this.setState({ posX: vector.x, posY: vector.y, visibility: visibility });
+    };
+
     //Label
     const moonDiv = document.createElement("div");
     moonDiv.className = "label";
@@ -125,15 +136,9 @@ class Scene extends React.Component {
     moonLabel.position.set(1, 1, 1);
     sphere.add(moonLabel);
 
-    //Empty OBJECT
-    const obj = new THREE.Object3D();
-    obj.name = "LabelHolder";
-    obj.position.set(10, 0, 0);
-    scene.add(obj);
-
     const animate = function () {
-      console.log("Animate-This", this)
       requestAnimationFrame(animate);
+      toScreenPosition(obj, camera);
 
       if (isUserInteracting === false) {
         lon += 0.01;
@@ -148,10 +153,10 @@ class Scene extends React.Component {
       camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
       moonLabel.position.set(1, 1, 1);
       camera.lookAt(camera.target);
-      console.log("OBJECT:", obj);
-      this.toScreenPosition(obj, camera);
 
-      this.renderer.render(scene, camera);
+      // this.toScreenPosition(obj, camera);
+
+      renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
     };
 
@@ -161,7 +166,7 @@ class Scene extends React.Component {
   render() {
     return (
       <div>
-        <RefTest x={this.state.posX} y={this.state.posY}></RefTest>
+        <RefTest x={this.state.posX} y={this.state.posY} visibility={this.state.visibility}></RefTest>
         <div className={styles.scene3d} ref={this.mount}></div>
         <div className={styles.scene2d} ref={this.scene2d}></div>
       </div>

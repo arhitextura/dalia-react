@@ -1,14 +1,17 @@
 import React, { Component } from 'react'
-
- export default class RefTest extends Component {
-    constructor(){
+import styles from './reftes.module.scss'
+export default class RefTest extends Component {
+    constructor() {
         super()
         this.mount = React.createRef();
     }
     render() {
         return (
 
-          <div className="Posed" ref={this.props.innerRef} style={{left:this.props.x, right:this.props.y, position:"absolute"}}>Label</div>
+            <div 
+            className={styles.hotspot} 
+            ref={this.props.innerRef} 
+            style={{ left: this.props.x, top: this.props.y, position: "absolute", visibility:this.props.visibility }}>Label</div>
         )
     }
 }
