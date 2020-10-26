@@ -8,7 +8,7 @@ const initialState = {
 let data
 export const fetchImages = createAsyncThunk("images/fetchImages", async () => {
   const res = await axios.get("https://jsonplaceholder.typicode.com/photos")
-  return res
+  return res.data
 })
 export const panoramaSlice = createSlice({
   name: "panorama",
@@ -30,20 +30,21 @@ export const panoramaSlice = createSlice({
     getImage: (state) => {
       state.image =
         "Here we need an image path to load it with the pano package";
+    }
+    
+  },
+  extraReducers: {
+    [fetchImages.pending]: (state, action) => {
+      state.status = 'loading'
     },
-    extraReducers: {
-      [fetchImages.pending]: (state, action) => {
-        state.status = 'loading'
-      },
-      [fetchImages.fulfilled]: (state, action) => {
-        state.status = 'succeeded'
-        //Add the fetched data to the state
-        state.image = state.image.concat(action.payload)
-      },
-      [fetchImages.rejected]: (state, action) => {
-        state.status = "failed"
-        state.error = action.error.message
-      }
+    [fetchImages.fulfilled]: (state, action) => {
+      state.status = 'succeeded'
+      //Add the fetched data to the state
+      state.image = state.image.concat(action.payload)
+    },
+    [fetchImages.rejected]: (state, action) => {
+      state.status = "failed"
+      state.error = action.error.message
     }
   }
 })
