@@ -11,7 +11,7 @@ export default class RefTest extends Component {
             <div 
             className={styles.hotspot} 
             ref={this.props.innerRef} 
-            style={{ left: this.props.x, top: this.props.y, position: "absolute", visibility:this.props.visibility }}>Label</div>
+            style={{ left: this.props.x, top: this.props.y, position: "absolute", display:this.props.visibility }}>Label</div>
         )
     }
 }
