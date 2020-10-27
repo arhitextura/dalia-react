@@ -1,95 +1,109 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
 import styles from "./scene.module.scss";
 import * as THREE from "three";
-import RefTest from "./reftest";
-import {
-  CSS2DRenderer,
-  CSS2DObject,
-} from "three/examples/jsm/renderers/CSS2DRenderer";
-// import { OrbitControls } from "../../../../THREE/examples/jsm/controls/OrbitControls";
-import { PerspectiveCamera, Vector2, Vector3 } from "three";
+import { PerspectiveCamera, Raycaster, Vector2, Vector3 } from "three";
 
-export class Scene extends React.Component {
+class HotSpot extends React.Component {
+  // To be renamed to Scene.component.jsx
   constructor() {
     super();
-    this.state = {};
-    this.mount = React.createRef();
-    this.scene2d = React.createRef();
-    this.obj = new THREE.Object3D();
-  }
-
-  componentDidMount() {
-    
-    let scene = new THREE.Scene();
-    let camera = new PerspectiveCamera(
+    this.sceneRef = React.createRef();
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.scene = new THREE.Scene();
+    this.camera = new PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     );
-
-    camera.target = new THREE.Vector3(0, 0, 0);
-    let isUserInteracting = false,
-      onPointerDownMouseX = 0,
-      onPointerDownMouseY = 0,
-      lon = 0,
-      onPointerDownLon = 0,
-      lat = 0,
-      onPointerDownLat = 0,
-      phi = 0,
-      theta = 0;
-
-    const onPointerMove = (event) => {
-      if (event.isPrimary === false) return;
-      lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
-      lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+    
+    this.camera.target = new THREE.Vector3(0, 0, 0);
+    
+    this.state = {
+      isUserInteracting: false,
+      onPointerDownMouseX: 0,
+      onPointerDownMouseY: 0,
+      lon: 0,
+      onPointerDownLon: 0,
+      lat: 0,
+      onPointerDownLat: 0,
+      phi: 0,
+      theta: 0,
     };
-    const onPointerUp = (event) => {
-      if (event.isPrimary === false) return;
-      isUserInteracting = false;
+  }
 
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", onPointerUp);
-    };
+  onPointerMove = (event) => {
+    if (event.isPrimary === false) return;
+    this.setState({
+      lon:
+        (this.state.onPointerDownMouseX - event.clientX) * 0.1 +
+        this.state.onPointerDownLon,
+      lat:
+        (event.clientY - this.state.onPointerDownMouseY) * 0.1 +
+        this.state.onPointerDownLat,
+    });
+  };
 
-    const onPointerDown = (event) => {
-      if (event.isPrimary === false) return;
+  onPointerUp = (event) => {
+    if (event.isPrimary === false) return;
+    this.setState({ isUserInteracting: false });
 
-      isUserInteracting = true;
+    this.sceneRef.current.removeEventListener(
+      "pointermove",
+      this.onPointerMove
+    );
+    this.sceneRef.current.removeEventListener("pointerup", this.onPointerUp);
+  };
 
-      onPointerDownMouseX = event.clientX;
-      onPointerDownMouseY = event.clientY;
+  onPointerDown = (event) => {
+    if (event.isPrimary === false) return;
+    this.setState({
+      isUserInteracting: true,
+      onPointerDownMouseX: event.clientX,
+      onPointerDownMouseY: event.clientY,
+      onPointerDownLon: this.state.lon,
+      onPointerDownLat: this.state.lat,
+    });
+    this.sceneRef.current.addEventListener(
+      "pointermove",
+      this.onPointerMove,
+      false
+    );
+    this.sceneRef.current.addEventListener(
+      "pointerup",
+      this.onPointerUp,
+      false
+    );
+    this.sceneRef.current.addEventListener(
+      "pointerdown",
+      this.onPointerDown,
+      false
+    );
+    
+  };
 
-      onPointerDownLon = lon;
-      onPointerDownLat = lat;
-
-      window.addEventListener("pointermove", onPointerMove, false);
-      window.addEventListener("pointerup", onPointerUp, false);
-    };
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    window.addEventListener("pointerdown", onPointerDown, false);
-    window.addEventListener("resize", onWindowResize, false);
-    //RENDER ENGINES
-    // 3D Renderer
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    this.mount.current.appendChild(renderer.domElement);
-    // const renderer = new THREE.WebGLRenderer();
-    //CSS2D Renderer
-    const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.domElement.style.position = "absolute";
-    labelRenderer.domElement.style.top = "0px";
-    this.scene2d.current.appendChild(labelRenderer.domElement);
-
-    //Geometry
+  onWindowResize = () => {
+    console.log("Component resize");
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  };
+  
+  componentDidMount() {
+    console.log(this.camera.position);
+    window.onresize = this.onWindowResize
+    this.sceneRef.current.addEventListener(
+      "pointerup",
+      this.onPointerUp,
+      false
+    );
+    this.sceneRef.current.addEventListener(
+      "pointerdown",
+      this.onPointerDown,
+      false
+    );
+    
     const geometry = new THREE.SphereBufferGeometry(500, 80, 40);
     geometry.scale(-1, 1, 1);
     var texture = new THREE.TextureLoader().load(
@@ -97,89 +111,71 @@ export class Scene extends React.Component {
     );
     const material = new THREE.MeshBasicMaterial({
       map: texture,
-      wireframe: false,
+      wireframe: true,
     });
+    geometry.computeBoundingSphere()
     const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
 
-    //Empty OBJECT
-    const objGeometry = new THREE.SphereBufferGeometry(0.5, 15, 15);
-    const objMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
-      wireframe: false,
+    this.scene.add(sphere);
+
+    const temp_geometry = new THREE.SphereBufferGeometry(10, 10, 10)
+    const temp_material = new THREE.MeshBasicMaterial({
+      color: 0xFFFFFF,
+      wireframe: true,
     });
-    const obj = new THREE.Mesh(objGeometry, objMaterial);
-    obj.name = "LabelHolder";
-    obj.position.set(-10, 0, 10);
-    scene.add(obj);
+    const ball = new THREE.Mesh( temp_geometry, temp_material )
+    ball.position.set(10, 0, 10)
+    this.scene.add(ball)
 
-    const toScreenPosition = (obj, camera) => {
-      let { x, y, z } = obj.position;
-      var objVector = new THREE.Vector3(x, y, z);
-
-      var widthHalf = 0.5 * renderer.getContext().canvas.width;
-      var heightHalf = 0.5 * renderer.getContext().canvas.height;
-
-      if (scene.autoUpdate === true) scene.updateMatrixWorld();
-      if (camera.parent === null) camera.updateMatrixWorld();
-      let vector = objVector.project(camera);
-      const isVisible =
-        obj.visible && vector.z >= -1 && vector.z <= 1 ? "" : "none";
-
-      vector.x = vector.x * widthHalf + widthHalf;
-      vector.y = -vector.y * heightHalf + heightHalf;
-      // console.log(`X: ${vector.x} ==== Y:${vector.y}`);
-      this.setState({ posX: vector.x, posY: vector.y, visibility: isVisible });
-    };
-
-    //Label for debug
-    const moonDiv = document.createElement("div");
-    moonDiv.className = "label";
-    moonDiv.textContent = "Label moon";
-    moonDiv.style.marginTop = "-1em";
-    moonDiv.style.color = "#DDD";
-    const moonLabel = new CSS2DObject(moonDiv);
+    this.sceneRef.current.appendChild(this.renderer.domElement);
     
-    console.log(moonLabel.position);
-    sphere.add(moonLabel);
+    let ray = new THREE.Raycaster()
+    let mouse = new Vector2()
 
-    const animate = function () {
+    const onMouseMove = (e)=>{
+      mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
+      mouse.y = - (e.clientY/window.innerHeight) * 2 + 1;
+      console.log(mouse);
+    }
+    window.addEventListener('mousemove', onMouseMove, false)
+    const animate = () => {
       requestAnimationFrame(animate);
-      toScreenPosition(obj, camera);
-
-      if (isUserInteracting === false) {
-        lon += 0.01;
+      ray.setFromCamera(mouse, this.camera)
+      let intersects = ray.intersectObject(sphere)
+      if (intersects.length > 0 ) {
+        ball.position.set(0,0,0);
+        ball.position.copy(intersects[0].point)
       }
 
-      lat = Math.max(-85, Math.min(85, lat));
-      phi = THREE.MathUtils.degToRad(90 - lat);
-      theta = THREE.MathUtils.degToRad(lon);
-
-      camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
-      camera.target.y = 500 * Math.cos(phi);
-      camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
-      moonLabel.position.set(1, 1, 1);
-      camera.lookAt(camera.target);
-
-      renderer.render(scene, camera);
-      labelRenderer.render(scene, camera);
+      if (this.state.isUserInteracting === false) {
+        this.setState((prevState) => {
+          return { lon: prevState.lon + 0.01 };
+        });
+      }
+      this.setState((prevState) => {
+        return {
+          lat: Math.max(-85, Math.min(85, prevState.lat)),
+          phi: THREE.MathUtils.degToRad(90 - prevState.lat),
+          theta: THREE.MathUtils.degToRad(prevState.lon),
+        };
+      });
+      this.camera.target.x =
+        500 * Math.sin(this.state.phi) * Math.cos(this.state.theta);
+      this.camera.target.y = 500 * Math.cos(this.state.phi);
+      this.camera.target.z =
+        500 * Math.sin(this.state.phi) * Math.sin(this.state.theta);
+      this.camera.lookAt(this.camera.target);
+      this.renderer.render(this.scene, this.camera);
     };
-
     animate();
   }
 
   render() {
     return (
-      <div>
-        <RefTest
-          x={this.state.posX}
-          y={this.state.posY}
-          visibility={this.state.visibility}
-        ></RefTest>
-        <div className={styles.scene3d} ref={this.mount}></div>
-        <div className={styles.scene2d} ref={this.scene2d}></div>
+      <div className={styles.scene} ref={this.sceneRef}>
       </div>
     );
   }
 }
 
+export default HotSpot;

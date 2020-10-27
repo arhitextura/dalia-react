@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import Menu from "./components/table-menu/menu.component";
-import {Scene} from './components/scene/Scene.component'
+import Scene from './components/scene/Scene.component'
 import { useSelector, useDispatch } from "react-redux";
 import { fetchImages } from "./panoramaSlice";
-import Hotspot from './components/scene/hotspot.component'
+
 
 export default function Panorama() {
   const images = useSelector((state) => state.panorama); //This will set a fake state from store.panorama
@@ -20,8 +20,10 @@ export default function Panorama() {
   return (
     <div>
 
-      <Scene></Scene>
-      <Hotspot/>
+      <Scene>
+        
+      </Scene>
+      {/* <Hotspot/> */}
       <Menu />
       
     </div>
