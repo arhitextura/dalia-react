@@ -1,14 +1,15 @@
 import React from "react";
+import Hotspot from '../hotpsot/hotspot.component'
 import styles from "./scene.module.scss";
 import * as THREE from "three";
 import { PerspectiveCamera, Raycaster, Vector2, Vector3 } from "three";
 
-class HotSpot extends React.Component {
+class Scene extends React.Component {
   // To be renamed to Scene.component.jsx
   constructor() {
     super();
     this.sceneRef = React.createRef();
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.scene = new THREE.Scene();
     this.camera = new PerspectiveCamera(
@@ -54,10 +55,14 @@ class HotSpot extends React.Component {
       this.onPointerMove
     );
     this.sceneRef.current.removeEventListener("pointerup", this.onPointerUp);
+    this.sceneRef.current.removeEventListener("pointermove", this.onPointerMove);
   };
 
   onPointerDown = (event) => {
-    if (event.isPrimary === false) return;
+    if (event.isPrimary === false ) return;
+    //Diferentiate who dispatched the event
+    if (event.target.className!==styles.canvas) return
+    console.log(event.target.className )
     this.setState({
       isUserInteracting: true,
       onPointerDownMouseX: event.clientX,
@@ -84,14 +89,14 @@ class HotSpot extends React.Component {
   };
 
   onWindowResize = () => {
-    console.log("Component resize");
+
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   };
   
   componentDidMount() {
-    console.log(this.camera.position);
+
     window.onresize = this.onWindowResize
     this.sceneRef.current.addEventListener(
       "pointerup",
@@ -115,7 +120,7 @@ class HotSpot extends React.Component {
     });
     geometry.computeBoundingSphere()
     const sphere = new THREE.Mesh(geometry, material);
-
+    console.log(sphere);
     this.scene.add(sphere);
 
     const temp_geometry = new THREE.SphereBufferGeometry(10, 10, 10)
@@ -124,9 +129,9 @@ class HotSpot extends React.Component {
       wireframe: true,
     });
     const ball = new THREE.Mesh( temp_geometry, temp_material )
-    ball.position.set(10, 0, 10)
+    ball.position.set(10, 0, 100)
     this.scene.add(ball)
-
+    this.renderer.domElement.className = styles.canvas;
     this.sceneRef.current.appendChild(this.renderer.domElement);
     
     let ray = new THREE.Raycaster()
@@ -135,17 +140,16 @@ class HotSpot extends React.Component {
     const onMouseMove = (e)=>{
       mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
       mouse.y = - (e.clientY/window.innerHeight) * 2 + 1;
-      console.log(mouse);
     }
     window.addEventListener('mousemove', onMouseMove, false)
     const animate = () => {
       requestAnimationFrame(animate);
-      ray.setFromCamera(mouse, this.camera)
-      let intersects = ray.intersectObject(sphere)
-      if (intersects.length > 0 ) {
-        ball.position.set(0,0,0);
-        ball.position.copy(intersects[0].point)
-      }
+      // ray.setFromCamera(mouse, this.camera)
+      // let intersects = ray.intersectObject(sphere)
+      // if (intersects.length > 0 ) {
+      //   ball.position.set(0,0,0);
+      //   ball.position.copy(intersects[0].point)
+      // }
 
       if (this.state.isUserInteracting === false) {
         this.setState((prevState) => {
@@ -169,13 +173,17 @@ class HotSpot extends React.Component {
     };
     animate();
   }
-
+  
   render() {
+    
     return (
       <div className={styles.scene} ref={this.sceneRef}>
+        <Hotspot scene={this.scene}>
+          
+        </Hotspot>
       </div>
     );
   }
 }
 
-export default HotSpot;
+export default Scene;
