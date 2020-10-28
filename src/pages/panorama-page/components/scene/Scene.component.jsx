@@ -60,8 +60,6 @@ class Scene extends React.Component {
 
   onPointerDown = (event) => {
     if (event.isPrimary === false ) return;
-    //Diferentiate who dispatched the event
-    if (event.target.className!==styles.canvas) return
     console.log(event.target.className )
     this.setState({
       isUserInteracting: true,
@@ -173,7 +171,6 @@ class Scene extends React.Component {
     };
     animate();
   }
-  
   render() {
     
     return (

@@ -8,11 +8,13 @@
     align-items: center;
     pointer-events: painted;
     z-index: 100;
+    &:hover{
+        cursor: grab;
+    }
     svg{
         display: block;
         margin: auto;
         fill: #dbdbdb;
-        
         
     }
 }

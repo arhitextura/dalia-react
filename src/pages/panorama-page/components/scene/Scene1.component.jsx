@@ -10,7 +10,7 @@ import {
 // import { OrbitControls } from "../../../../THREE/examples/jsm/controls/OrbitControls";
 import { PerspectiveCamera, Vector2, Vector3 } from "three";
 
-export class Scene extends React.Component {
+export default class Scene extends React.Component {
   constructor() {
     super();
     this.state = {};
@@ -20,7 +20,7 @@ export class Scene extends React.Component {
   }
 
   componentDidMount() {
-    
+    console.log("Updates");
     let scene = new THREE.Scene();
     let camera = new PerspectiveCamera(
       75,
