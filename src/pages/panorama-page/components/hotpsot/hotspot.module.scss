@@ -8,6 +8,7 @@
     align-items: center;
     pointer-events: painted;
     z-index: 100;
+    
     &:hover{
         cursor: grab;
     }
