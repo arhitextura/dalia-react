@@ -1,50 +1,20 @@
 import React, { Component } from "react";
 import styles from "./hotspot.module.scss";
 import * as THREE from "three";
+import {Vector3, Vector2} from 'three' ;
 import { ReactComponent as Arrow } from "../../../../icons/arrow_circle_up-24px.svg";
+import {toScreenPosition, to3DPosition, normalizeMouseCoordinates} from '../scene/utils'
 
-const toScreenPosition = (obj, _camera, _renderer, _scene) => {
-  let { x, y, z } = obj.position;
-  var objVector = new THREE.Vector3(x, y, z);
-
-  var widthHalf = 0.5 * _renderer.getContext().canvas.width;
-  var heightHalf = 0.5 * _renderer.getContext().canvas.height;
-
-  if (_scene.autoUpdate === true) _scene.updateMatrixWorld();
-  if (_camera.parent === null) _camera.updateMatrixWorld();
-  let vector = objVector.project(_camera);
-  const isVisible =
-    obj.visible && vector.z >= -1 && vector.z <= 1 ? "" : "none";
-
-  vector.x = vector.x * widthHalf + widthHalf;
-  vector.y = -vector.y * heightHalf + heightHalf;
-  // console.log(`X: ${vector.x} ==== Y:${vector.y}`);
-  return { posX: vector.x, posY: vector.y, visibility: isVisible };
-};
 
 class Hotspot extends Component {
   constructor() {
     super();
     this.domRef = React.createRef();
-    // this.state = {
-    //   isUserIntercating: false,
-    //   x: 100,
-    //   y: 100,
-    // };
-    this.temp_geometry = new THREE.SphereBufferGeometry(10, 10, 10);
-    this.temp_material = new THREE.MeshBasicMaterial({
-      color: 0xffffaf,
-      wireframe: true,
-    });
-
-    this.ball = new THREE.Mesh(this.temp_geometry, this.temp_material);
-    this.ball.name = "UniqueName";
-    this.ball.position.set(50, 0, 100);
+    this.anchor = new THREE.Object3D();
+    this.anchor.name = "UniqueName";
+    this.anchor.position.set(50, 0, 100);
     this.isUserIntercating = false;
-    this.position = {
-      x: 100,
-      y: 100,
-    };
+    this.mousePosition = new Vector2(100, 100)
   }
 
   handlePointerDown = (e) => {
@@ -58,16 +28,20 @@ class Hotspot extends Component {
       false
     );
   };
+
   handlePointerMove = (e) => {
     if (this.isUserIntercating) {
-      this.position = {
+      this.mousePosition = {
         x: e.clientX,
         y: e.clientY,
       };
     }
   };
+
   handlePointerUp = (e) => {
     this.isUserIntercating = false;
+    this.mousePosition = normalizeMouseCoordinates(new Vector2(e.clientX, e.clientY))
+    to3DPosition(this.anchor,this.mousePosition, this.props.camera, this.props.sphere)
     window.removeEventListener("pointermove", this.handlePointerMove, false);
     this.domRef.current.removeEventListener(
       "pointerup",
@@ -82,22 +56,22 @@ class Hotspot extends Component {
       this.handlePointerDown,
       false
     );
-    this.props.scene.add(this.ball);
+    this.props.scene.add(this.anchor);
     const update = () => {
       requestAnimationFrame(update);
       if (this.isUserIntercating) {
-        this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.position.x}px,${this.position.y}px)`;
+        this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`;
       } else {
         const { posX, posY, visibility } = toScreenPosition(
-          this.ball,
+          this.anchor,
           this.props.camera,
           this.props.renderer,
           this.props.scene
         );
-        this.position.x = posX;
-        this.position.y = posY;
+        this.mousePosition.x = posX;
+        this.mousePosition.y = posY;
 
-        this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.position.x}px,${this.position.y}px)`;
+        this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`;
         this.domRef.current.style.display = visibility;
       }
     };
@@ -108,7 +82,7 @@ class Hotspot extends Component {
       <div
         className={styles.hotspot}
         style={{
-          transform: `translate(-50%,-50%) translate(${this.position.x}px,${this.position.y}px)`,
+          transform: `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`,
         }}
         ref={this.domRef}
       >

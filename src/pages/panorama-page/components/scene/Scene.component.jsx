@@ -3,11 +3,14 @@ import Hotspot from "../hotpsot/hotspot.component";
 import styles from "./scene.module.scss";
 import * as THREE from "three";
 import { PerspectiveCamera, Raycaster, Vector2, Vector3 } from "three";
-
+import { to3DPosition, normalizeMouseCoordinates } from "./utils";
 class Scene extends React.Component {
   // To be renamed to Scene.component.jsx
   constructor() {
     super();
+    this.state = {
+      hotSpots: [],
+    };
     this.sceneRef = React.createRef();
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -19,7 +22,18 @@ class Scene extends React.Component {
       1000
     );
     this.camera.target = new THREE.Vector3(0, 0, 0);
-
+    this.geometry = new THREE.SphereBufferGeometry(500, 80, 40);
+    this.geometry.scale(-1, 1, 1);
+    let texture = new THREE.TextureLoader().load(
+      "http://localhost:5000/projects/image"
+    );
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      wireframe: true,
+    });
+    this.geometry.computeBoundingSphere();
+    this.sphere = new THREE.Mesh(this.geometry, material);
+    this.scene.add(this.sphere);
     this.isUserInteracting = false;
     this.onPointerDownMouseX = 0;
     this.onPointerDownMouseY = 0;
@@ -29,18 +43,43 @@ class Scene extends React.Component {
     this.onPointerDownLat = 0;
     this.phi = 0;
     this.theta = 0;
+    this.children = [];
   }
 
+  onPointerDoubleClick = (event) => {
+    if (event.isPrimary === false) return;
+    const Child = React.cloneElement(
+      <Hotspot
+      />,
+      {
+        scene:this.scene,
+        camera:this.camera,
+        renderer:this.renderer,
+        sphere:this.sphere
+      }
+    );
+    this.setState(
+      (prevState) => {
+        prevState.hotSpots.push(Child)
+        return {hotSpots:[...prevState.hotSpots]}
+      },
+      () => console.log(this.state)
+    );
+    // this.children.push(child);
+    console.log("Double Clicked");
+  };
+  
   onPointerMove = (event) => {
     if (event.isPrimary === false) return;
-      this.lon = (this.onPointerDownMouseX - event.clientX) * 0.1 + this.onPointerDownLon
-      this.lat = (event.clientY - this.onPointerDownMouseY) * 0.1 + this.onPointerDownLat
-
-  }
+    this.lon =
+      (this.onPointerDownMouseX - event.clientX) * 0.1 + this.onPointerDownLon;
+    this.lat =
+      (event.clientY - this.onPointerDownMouseY) * 0.1 + this.onPointerDownLat;
+  };
 
   onPointerUp = (event) => {
     if (event.isPrimary === false) return;
-    this.isUserInteracting = false
+    this.isUserInteracting = false;
 
     this.sceneRef.current.removeEventListener(
       "pointermove",
@@ -55,11 +94,11 @@ class Scene extends React.Component {
 
   onPointerDown = (event) => {
     if (event.isPrimary === false) return;
-    this.isUserInteracting = true
-    this.onPointerDownMouseX = event.clientX
-    this.onPointerDownMouseY = event.clientY
-    this.onPointerDownLon = this.lon
-    this.onPointerDownLat = this.lat
+    this.isUserInteracting = true;
+    this.onPointerDownMouseX = event.clientX;
+    this.onPointerDownMouseY = event.clientY;
+    this.onPointerDownLon = this.lon;
+    this.onPointerDownLat = this.lat;
     this.sceneRef.current.addEventListener(
       "pointermove",
       this.onPointerMove,
@@ -95,29 +134,12 @@ class Scene extends React.Component {
       this.onPointerDown,
       false
     );
-
-    const geometry = new THREE.SphereBufferGeometry(500, 80, 40);
-    geometry.scale(-1, 1, 1);
-    var texture = new THREE.TextureLoader().load(
-      "http://localhost:5000/projects/image"
+    this.sceneRef.current.addEventListener(
+      "dblclick",
+      this.onPointerDoubleClick,
+      false
     );
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      wireframe: true,
-    });
-    geometry.computeBoundingSphere();
-    const sphere = new THREE.Mesh(geometry, material);
-    console.log(sphere);
-    this.scene.add(sphere);
 
-    const temp_geometry = new THREE.SphereBufferGeometry(10, 10, 10);
-    const temp_material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-    });
-    const ball = new THREE.Mesh(temp_geometry, temp_material);
-    ball.position.set(10, 0, 100);
-    this.scene.add(ball);
     this.renderer.domElement.className = styles.canvas;
     this.sceneRef.current.appendChild(this.renderer.domElement);
 
@@ -131,26 +153,18 @@ class Scene extends React.Component {
     window.addEventListener("mousemove", onMouseMove, false);
     const animate = () => {
       requestAnimationFrame(animate);
-      // ray.setFromCamera(mouse, this.camera)
-      // let intersects = ray.intersectObject(sphere)
-      // if (intersects.length > 0 ) {
-      //   ball.position.set(0,0,0);
-      //   ball.position.copy(intersects[0].point)
-      // }
 
       if (this.isUserInteracting === false) {
-        this.lon = this.lon + 0.01 
+        this.lon = this.lon + 0.01;
       }
-      
-      this.lat= Math.max(-85, Math.min(85, this.lat))
-      this.phi= THREE.MathUtils.degToRad(90 - this.lat)
-      this.theta= THREE.MathUtils.degToRad(this.lon)
-        
-      this.camera.target.x =
-        500 * Math.sin(this.phi) * Math.cos(this.theta);
+
+      this.lat = Math.max(-85, Math.min(85, this.lat));
+      this.phi = THREE.MathUtils.degToRad(90 - this.lat);
+      this.theta = THREE.MathUtils.degToRad(this.lon);
+
+      this.camera.target.x = 500 * Math.sin(this.phi) * Math.cos(this.theta);
       this.camera.target.y = 500 * Math.cos(this.phi);
-      this.camera.target.z =
-        500 * Math.sin(this.phi) * Math.sin(this.theta);
+      this.camera.target.z = 500 * Math.sin(this.phi) * Math.sin(this.theta);
       this.camera.lookAt(this.camera.target);
       this.renderer.render(this.scene, this.camera);
     };
@@ -159,7 +173,13 @@ class Scene extends React.Component {
   render() {
     return (
       <div className={styles.scene} ref={this.sceneRef}>
-        <Hotspot scene={this.scene} camera = {this.camera}  renderer = {this.renderer} ></Hotspot>
+        <Hotspot
+          scene={this.scene}
+          camera={this.camera}
+          renderer={this.renderer}
+          sphere={this.sphere}
+        ></Hotspot>
+        {this.state.hotSpots}
       </div>
     );
   }
