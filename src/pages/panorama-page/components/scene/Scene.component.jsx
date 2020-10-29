@@ -48,27 +48,23 @@ class Scene extends React.Component {
 
   onPointerDoubleClick = (event) => {
     if (event.isPrimary === false) return;
-    const Child = React.cloneElement(
-      <Hotspot
-      />,
-      {
-        scene:this.scene,
-        camera:this.camera,
-        renderer:this.renderer,
-        sphere:this.sphere
-      }
-    );
+    const Child = React.cloneElement(<Hotspot />, {
+      scene: this.scene,
+      camera: this.camera,
+      renderer: this.renderer,
+      sphere: this.sphere,
+    });
     this.setState(
       (prevState) => {
-        prevState.hotSpots.push(Child)
-        return {hotSpots:[...prevState.hotSpots]}
+        prevState.hotSpots.push(Child);
+        return { hotSpots: [...prevState.hotSpots] };
       },
       () => console.log(this.state)
     );
     // this.children.push(child);
     console.log("Double Clicked");
   };
-  
+
   onPointerMove = (event) => {
     if (event.isPrimary === false) return;
     this.lon =
@@ -80,7 +76,9 @@ class Scene extends React.Component {
   onPointerUp = (event) => {
     if (event.isPrimary === false) return;
     this.isUserInteracting = false;
-
+    console.log("ClientY", event.clientY);
+    console.log("getBoundingRect", this.renderer.domElement.getBoundingClientRect());
+;
     this.sceneRef.current.removeEventListener(
       "pointermove",
       this.onPointerMove
@@ -123,6 +121,7 @@ class Scene extends React.Component {
   };
 
   componentDidMount() {
+    console.log("Rendered");
     window.onresize = this.onWindowResize;
     this.sceneRef.current.addEventListener(
       "pointerup",
@@ -179,7 +178,18 @@ class Scene extends React.Component {
           renderer={this.renderer}
           sphere={this.sphere}
         ></Hotspot>
-        {this.state.hotSpots}
+        
+        {this.state.hotSpots.map((child, i) => {
+          return (
+            <Hotspot
+              scene={this.scene}
+              camera={this.camera}
+              renderer={this.renderer}
+              sphere={this.sphere}
+              key={i}
+            />
+          );
+        })}
       </div>
     );
   }

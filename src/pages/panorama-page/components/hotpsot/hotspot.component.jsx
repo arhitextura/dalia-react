@@ -7,14 +7,14 @@ import {toScreenPosition, to3DPosition, normalizeMouseCoordinates} from '../scen
 
 
 class Hotspot extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.domRef = React.createRef();
     this.anchor = new THREE.Object3D();
     this.anchor.name = "UniqueName";
     this.anchor.position.set(50, 0, 100);
     this.isUserIntercating = false;
-    this.mousePosition = new Vector2(100, 100)
+    this.mousePosition = new Vector2()
   }
 
   handlePointerDown = (e) => {
@@ -31,16 +31,14 @@ class Hotspot extends Component {
 
   handlePointerMove = (e) => {
     if (this.isUserIntercating) {
-      this.mousePosition = {
-        x: e.clientX,
-        y: e.clientY,
-      };
+      this.mousePosition.set(e.clientX,e.clientY)
     }
   };
 
   handlePointerUp = (e) => {
+    e.stopImmediatePropagation();
     this.isUserIntercating = false;
-    this.mousePosition = normalizeMouseCoordinates(new Vector2(e.clientX, e.clientY))
+    this.mousePosition = normalizeMouseCoordinates(new Vector2(e.clientX, e.clientY), this.props.renderer)
     to3DPosition(this.anchor,this.mousePosition, this.props.camera, this.props.sphere)
     window.removeEventListener("pointermove", this.handlePointerMove, false);
     this.domRef.current.removeEventListener(
@@ -61,6 +59,7 @@ class Hotspot extends Component {
       requestAnimationFrame(update);
       if (this.isUserIntercating) {
         this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`;
+        
       } else {
         const { posX, posY, visibility } = toScreenPosition(
           this.anchor,
@@ -73,6 +72,10 @@ class Hotspot extends Component {
 
         this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`;
         this.domRef.current.style.display = visibility;
+      }
+      if(!this.logged){
+        console.log(this);
+        this.logged = true;
       }
     };
     update();

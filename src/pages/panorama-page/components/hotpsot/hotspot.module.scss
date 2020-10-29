@@ -1,21 +1,22 @@
-.hotspot{
+.hotspot {
     position: absolute;
+    display: flex;
     color: magenta;
+    align-items: center;
+    pointer-events: painted;
     min-width: 75px;
     min-height: 75px;
     background-color: rgba($color: #ff73d0, $alpha: 0.3);
-    display: flex;
-    align-items: center;
-    pointer-events: painted;
     z-index: 100;
-    
-    &:hover{
+
+    &:hover {
         cursor: grab;
     }
-    svg{
+
+    svg {
         display: block;
         margin: auto;
         fill: #dbdbdb;
-        
+
     }
 }
