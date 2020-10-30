@@ -58,8 +58,7 @@ class Scene extends React.Component {
       (prevState) => {
         prevState.hotSpots.push(Child);
         return { hotSpots: [...prevState.hotSpots] };
-      },
-      () => console.log(this.state)
+      }
     );
     // this.children.push(child);
     console.log("Double Clicked");
@@ -76,8 +75,6 @@ class Scene extends React.Component {
   onPointerUp = (event) => {
     if (event.isPrimary === false) return;
     this.isUserInteracting = false;
-    console.log("ClientY", event.clientY);
-    console.log("getBoundingRect", this.renderer.domElement.getBoundingClientRect());
 ;
     this.sceneRef.current.removeEventListener(
       "pointermove",
@@ -121,7 +118,6 @@ class Scene extends React.Component {
   };
 
   componentDidMount() {
-    console.log("Rendered");
     window.onresize = this.onWindowResize;
     this.sceneRef.current.addEventListener(
       "pointerup",
@@ -170,8 +166,26 @@ class Scene extends React.Component {
     animate();
   }
   render() {
+    const c = this.state.hotSpots.map((child, i) => {
+      return (
+        <Hotspot
+          scene={this.scene}
+          camera={this.camera}
+          renderer={this.renderer}
+          sphere={this.sphere}
+          key={i}
+        />
+      );
+    })
     return (
       <div className={styles.scene} ref={this.sceneRef}>
+        <div>
+        <Hotspot
+          scene={this.scene}
+          camera={this.camera}
+          renderer={this.renderer}
+          sphere={this.sphere}
+        ></Hotspot>
         <Hotspot
           scene={this.scene}
           camera={this.camera}
@@ -179,17 +193,9 @@ class Scene extends React.Component {
           sphere={this.sphere}
         ></Hotspot>
         
-        {this.state.hotSpots.map((child, i) => {
-          return (
-            <Hotspot
-              scene={this.scene}
-              camera={this.camera}
-              renderer={this.renderer}
-              sphere={this.sphere}
-              key={i}
-            />
-          );
-        })}
+        {c}
+        </div>
+
       </div>
     );
   }
