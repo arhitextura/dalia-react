@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styles from "./hotspot.module.scss";
 import * as THREE from "three";
-import { Vector3, Vector2 } from "three";
+import { Vector2 } from "three";
 import { ReactComponent as Arrow } from "../../../../icons/arrow_circle_up-24px.svg";
 import {
   toScreenPosition,
@@ -71,6 +71,7 @@ class Hotspot extends Component {
 
     const update = () => {
       requestAnimationFrame(update);
+      
       if (this.isUserIntercating) {
         this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`;
       } else {

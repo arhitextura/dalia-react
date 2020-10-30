@@ -6,7 +6,7 @@ import { fetchImages } from "./panoramaSlice";
 
 
 export default function Panorama() {
-  const images = useSelector((state) => state.panorama); //This will set a fake state from store.panorama
+  
   const dispatch = useDispatch();
   const status = useSelector((state) => state.panorama.status);
 
@@ -20,10 +20,8 @@ export default function Panorama() {
   return (
     <div>
 
-      <Scene>
-        
-      </Scene>
-      {/* <Hotspot/> */}
+      <Scene/>
+
       <Menu />
       
     </div>

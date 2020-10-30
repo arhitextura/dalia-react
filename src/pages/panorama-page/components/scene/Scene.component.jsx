@@ -2,8 +2,7 @@ import React from "react";
 import Hotspot from "../hotpsot/hotspot.component";
 import styles from "./scene.module.scss";
 import * as THREE from "three";
-import { PerspectiveCamera, Raycaster, Vector2, Vector3 } from "three";
-import { to3DPosition, normalizeMouseCoordinates } from "./utils";
+import { PerspectiveCamera, Vector2 } from "three";
 class Scene extends React.Component {
   // To be renamed to Scene.component.jsx
   constructor() {
@@ -25,15 +24,16 @@ class Scene extends React.Component {
     this.geometry = new THREE.SphereBufferGeometry(500, 80, 40);
     this.geometry.scale(-1, 1, 1);
     let texture = new THREE.TextureLoader().load(
-      "http://localhost:5000/projects/image"
+      "https://cdn.eso.org/images/publicationjpg/vlt-mw-potw-cc-extended.jpg"
     );
     const material = new THREE.MeshBasicMaterial({
       map: texture,
-      wireframe: true,
+      wireframe: false,
     });
     this.geometry.computeBoundingSphere();
     this.sphere = new THREE.Mesh(this.geometry, material);
     this.scene.add(this.sphere);
+    //Animation variables
     this.isUserInteracting = false;
     this.onPointerDownMouseX = 0;
     this.onPointerDownMouseY = 0;
@@ -54,14 +54,10 @@ class Scene extends React.Component {
       renderer: this.renderer,
       sphere: this.sphere,
     });
-    this.setState(
-      (prevState) => {
-        prevState.hotSpots.push(Child);
-        return { hotSpots: [...prevState.hotSpots] };
-      }
-    );
-    // this.children.push(child);
-    console.log("Double Clicked");
+    this.setState((prevState) => {
+      prevState.hotSpots.push(Child);
+      return { hotSpots: [...prevState.hotSpots] };
+    });
   };
 
   onPointerMove = (event) => {
@@ -75,7 +71,6 @@ class Scene extends React.Component {
   onPointerUp = (event) => {
     if (event.isPrimary === false) return;
     this.isUserInteracting = false;
-;
     this.sceneRef.current.removeEventListener(
       "pointermove",
       this.onPointerMove
@@ -138,7 +133,6 @@ class Scene extends React.Component {
     this.renderer.domElement.className = styles.canvas;
     this.sceneRef.current.appendChild(this.renderer.domElement);
 
-    let ray = new THREE.Raycaster();
     let mouse = new Vector2();
 
     const onMouseMove = (e) => {
@@ -149,10 +143,10 @@ class Scene extends React.Component {
     const animate = () => {
       requestAnimationFrame(animate);
 
+      //Rotate the screen
       if (this.isUserInteracting === false) {
         this.lon = this.lon + 0.01;
       }
-
       this.lat = Math.max(-85, Math.min(85, this.lat));
       this.phi = THREE.MathUtils.degToRad(90 - this.lat);
       this.theta = THREE.MathUtils.degToRad(this.lon);
@@ -176,26 +170,12 @@ class Scene extends React.Component {
           key={i}
         />
       );
-    })
+    });
     return (
       <div className={styles.scene} ref={this.sceneRef}>
         <div>
-        <Hotspot
-          scene={this.scene}
-          camera={this.camera}
-          renderer={this.renderer}
-          sphere={this.sphere}
-        ></Hotspot>
-        <Hotspot
-          scene={this.scene}
-          camera={this.camera}
-          renderer={this.renderer}
-          sphere={this.sphere}
-        ></Hotspot>
-        
-        {c}
+          {c}
         </div>
-
       </div>
     );
   }

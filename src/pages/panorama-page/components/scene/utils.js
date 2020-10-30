@@ -4,9 +4,6 @@ export const toScreenPosition = (obj, _camera, _renderer, _scene) => {
   let { x, y, z } = obj.position;
   var objVector = new Vector3(x, y, z);
   let rect = _renderer.domElement.getBoundingClientRect();
-  // var widthHalf = 0.5 * _renderer.getContext().canvas.width;
-  // var heightHalf = 0.5 * _renderer.getContext().canvas.height;
-  //TODO Ceva es in neregul cu prostia asta
   
   var widthHalf = 0.5 * (rect.width - rect.left)
   var heightHalf = 0.5 * (rect.bottom - rect.top)
@@ -23,7 +20,6 @@ export const toScreenPosition = (obj, _camera, _renderer, _scene) => {
   const frustum = new Frustum()
   frustum.setFromProjectionMatrix(new Matrix4().multiplyMatrices(_camera.projectionMatrix, _camera.matrixWorldInverse))
   const isVisible = frustum.containsPoint(obj.position) ? "" : "none";
-
 
   return { posX: vector.x, posY: vector.y, visibility: isVisible };
 };
@@ -60,7 +56,6 @@ export const screenToWorld = (_obj, _camera, _mouse) => {
   toPosition.set(mouse.x, mouse.y, 0.5)
   toPosition.unproject(_camera)
   toPosition.sub(_camera.position).normalize()
-  let distance = - _camera.position.z / toPosition.z;
 
   _obj.position.copy(_camera.position).add(toPosition.multiplyScalar(450));
 }
