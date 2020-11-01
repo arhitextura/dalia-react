@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Menu from "./components/table-menu/menu.component";
 import Scene from './components/scene/Scene.component'
+import SceneFunctional from './components/scene/SceneFunctional.component'
 import { useSelector, useDispatch } from "react-redux";
 import { fetchImages } from "./panoramaSlice";
 
@@ -20,8 +21,8 @@ export default function Panorama() {
   return (
     <div>
 
-      <Scene/>
-
+      {/* <Scene/> */}
+    <SceneFunctional/>
       <Menu />
       
     </div>

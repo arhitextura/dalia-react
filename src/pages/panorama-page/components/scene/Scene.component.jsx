@@ -1,8 +1,14 @@
 import React from "react";
 import Hotspot from "../hotpsot/hotspot.component";
 import styles from "./scene.module.scss";
+import { useSelector, useDispatch } from 'react-redux';
+import { addHotspot } from './sceneSlice'
+import {selectHotspots} from './sceneSlice'
 import * as THREE from "three";
 import { PerspectiveCamera, Vector2 } from "three";
+
+
+
 class Scene extends React.Component {
   // To be renamed to Scene.component.jsx
   constructor() {
@@ -28,7 +34,7 @@ class Scene extends React.Component {
     );
     const material = new THREE.MeshBasicMaterial({
       map: texture,
-      wireframe: false,
+      wireframe: true,
     });
     this.geometry.computeBoundingSphere();
     this.sphere = new THREE.Mesh(this.geometry, material);
@@ -112,7 +118,10 @@ class Scene extends React.Component {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   };
 
+
+
   componentDidMount() {
+    //Events
     window.onresize = this.onWindowResize;
     this.sceneRef.current.addEventListener(
       "pointerup",
@@ -130,6 +139,9 @@ class Scene extends React.Component {
       false
     );
 
+    //Connecting store
+    
+    //Scene settings threejs
     this.renderer.domElement.className = styles.canvas;
     this.sceneRef.current.appendChild(this.renderer.domElement);
 
@@ -145,7 +157,7 @@ class Scene extends React.Component {
 
       //Rotate the screen
       if (this.isUserInteracting === false) {
-        this.lon = this.lon + 0.01;
+        // this.lon = this.lon + 0.01;
       }
       this.lat = Math.max(-85, Math.min(85, this.lat));
       this.phi = THREE.MathUtils.degToRad(90 - this.lat);

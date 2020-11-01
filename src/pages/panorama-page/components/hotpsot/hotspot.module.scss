@@ -8,15 +8,41 @@
     min-height: 75px;
     // background-color: rgba($color: #ff73d0, $alpha: 0.3);
     z-index: 100;
-
-    &:hover {
-        cursor: grab;
-    }
-
-    svg {
-        display: block;
+    .arrow {
+        // display: block;
         margin: auto;
-        fill: #dbdbdb;
+        fill: #FAFAFA;
+        cursor: pointer;
 
     }
+    .close_button{
+        fill: #FF0000;
+        
+        &:hover{
+            fill: #ff7c7c;
+            cursor: pointer;
+        }
+    }
+    .rotate_button{
+        fill: #00b309;
+        &:hover{
+            fill: #54fa5c;
+            cursor: pointer;
+        }
+    }
+    .scene_list{
+        fill: #FAFAFA;
+        &:hover{
+            fill: rgb(151, 151, 151);
+            cursor: pointer;
+        }
+    }
+
 }
+.grab{
+    cursor: grab;
+}
+.grabbing{
+    cursor: grabbing;
+}
+
