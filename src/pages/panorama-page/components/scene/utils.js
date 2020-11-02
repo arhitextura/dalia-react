@@ -25,7 +25,7 @@ export const toScreenPosition = (obj, _camera, _renderer, _scene) => {
 };
 
 export const normalizeMouseCoordinates = (_mouse, _renderer) => {
-  console.log("Normalized");
+
   const rect = _renderer.domElement.getBoundingClientRect();
   // const x = ((_mouse.x - rect.left) / (rect.width - rect.left)) * 2 - 1;
   const x = ((_mouse.x ) / (rect.width - rect.left)) * 2 - 1;
