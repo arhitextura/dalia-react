@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import styles from "./hotspot.module.scss";
 
-
 import * as THREE from "three";
 import { Vector2 } from "three";
 import { ReactComponent as Arrow } from "../../../../icons/arrow_circle_up-24px.svg";
@@ -24,14 +23,16 @@ class Hotspot extends Component {
     this.isUserIntercating = false;
     this.isDraggable = process.env.NODE_ENV === "development" ? true : false;
     this.state = {
-      rotation:0
-    }
+      rotation: 0,
+    };
+    console.log(this.props);
     this.mousePosition = new Vector2(0.0, 0.0);
     to3DPosition(
       this.anchor,
       this.mousePosition,
       this.props.camera,
-      this.props.sphere
+      this.props.sphere,
+      this.props.renderer
     );
   }
 
@@ -57,9 +58,9 @@ class Hotspot extends Component {
     e.preventDefault();
     if (this.isUserIntercating) {
       const x =
-        e.clientX - this.props.renderer.domElement.getBoundingClientRect().left;
+      e.clientX - this.props.renderer.domElement.getBoundingClientRect().left;
       const y =
-        e.clientY - this.props.renderer.domElement.getBoundingClientRect().top;
+      e.clientY - this.props.renderer.domElement.getBoundingClientRect().top;
       this.mousePosition.set(x, y);
     }
   };
@@ -69,15 +70,16 @@ class Hotspot extends Component {
     e.preventDefault();
     this.isUserIntercating = false;
     this.domRef.current.classList.remove(styles.grabbing);
-    this.mousePosition = normalizeMouseCoordinates(
-      new Vector2(this.mousePosition.x, this.mousePosition.y),
-      this.props.renderer
-    );
+    this.mousePosition.copy(
+      normalizeMouseCoordinates(this.mousePosition, this.props.renderer)
+      );
+
     to3DPosition(
       this.anchor,
       this.mousePosition,
       this.props.camera,
-      this.props.sphere
+      this.props.sphere,
+      this.props.renderer
     );
     window.removeEventListener("pointermove", this.handlePointerMove, false);
     this.domRef.current.removeEventListener(
@@ -88,7 +90,6 @@ class Hotspot extends Component {
   };
 
   componentDidMount() {
-
     this.domRef.current.addEventListener(
       "pointerdown",
       this.handlePointerDown,
@@ -98,7 +99,7 @@ class Hotspot extends Component {
 
     const update = () => {
       requestAnimationFrame(update);
-      
+
       if (this.isUserIntercating) {
         this.domRef.current.style.transform = `translate(-50%,-50%) translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`;
       } else {
@@ -118,32 +119,33 @@ class Hotspot extends Component {
     update();
   }
   handleRotation = () => {
-    this.setState((prevState)=>{
-      return {rotation: prevState.rotation+30}
-    })
-  }
-  loadSceneOnClick = () => {
-    
-  }
+    this.setState((prevState) => {
+      return { rotation: prevState.rotation + 30 };
+    });
+  };
+  loadSceneOnClick = () => {};
   render() {
     return (
-      <div className={`${styles.hotspot} ${this.isDraggable ? styles.grab : ""}`} ref={this.domRef}>
+      <div
+        className={`${styles.hotspot} ${this.isDraggable ? styles.grab : ""}`}
+        ref={this.domRef}
+      >
         <div>
           <SmallButton>
-            <Close className={styles.close_button}/>
+            <Close className={styles.close_button} />
           </SmallButton>
           <SmallButton onClick={this.handleRotation}>
-            <Rotate className={styles.rotate_button}/>
+            <Rotate className={styles.rotate_button} />
           </SmallButton>
         </div>
         <Arrow
           className={styles.arrow}
-          style={{transform:`rotate(${this.state.rotation}deg)`}}
-          onClick = {this.loadSceneOnClick}
+          style={{ transform: `rotate(${this.state.rotation}deg)` }}
+          onClick={this.loadSceneOnClick}
         />
         <div>
           <SmallButton onClick={this.handleRotation}>
-            <SceneList className={styles.scene_list}/>
+            <SceneList className={styles.scene_list} />
           </SmallButton>
         </div>
       </div>

@@ -11,11 +11,11 @@ export default function Panorama() {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.panorama.status);
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchImages());
-    }
-  }, [status, dispatch]);
+  // useEffect(() => {
+  //   if (status === "idle") {
+  //     dispatch(fetchImages());
+  //   }
+  // }, [status, dispatch]);
 
 
   return (

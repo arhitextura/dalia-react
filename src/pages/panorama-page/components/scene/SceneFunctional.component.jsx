@@ -1,19 +1,19 @@
 import React, { useRef, useState, useEffect } from "react";
 import Hotspot from "../hotpsot/hotspot.component";
-import Button from '../button/button.component'
+import Button from "../button/button.component";
 import styles from "./scene.module.scss";
 
-import { useSelector, useDispatch } from 'react-redux';
-import { addHotspot } from './sceneSlice'
-import {selectHotspots} from './sceneSlice'
+import { useSelector, useDispatch } from "react-redux";
+import { addHotspot } from "./sceneSlice";
+import { selectHotspots } from "./sceneSlice";
 
 import * as THREE from "three";
 import { PerspectiveCamera, Vector2 } from "three";
 
 export default function SceneFunctional() {
   const sceneRef = useRef(null);
-  const dispatch = useDispatch()
-  const stateHs = useSelector(selectHotspots)
+  const dispatch = useDispatch();
+  const stateHs = useSelector(selectHotspots);
   let [hotspots, setHotspots] = useState([]);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -105,48 +105,49 @@ export default function SceneFunctional() {
       camera.target.y = 500 * Math.cos(phi);
       camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
 
-      
       camera.lookAt(camera.target);
       renderer.render(scene, camera);
     };
     animate();
-  }, []);
-  useEffect(() => {
-    console.log("State hotspots:", stateHs);
-    // const child = (
-    //   <Hotspot
-    //     scene={scene}
-    //     camera={camera}
-    //     renderer={renderer}
-    //     sphere={sphere}
-    //     key={5}
-    //   />
-    // );
-    setHotspots(([]));
-  }, []);
-  
-  const addHotspotToState = () => {
+    // return () => sceneRef.current.remove()
+  }, [hotspots]);
+
+  useEffect(()=>{
     const child = (
       <Hotspot
         scene={scene}
         camera={camera}
         renderer={renderer}
         sphere={sphere}
+        name = {"useEffect"}
       />
     );
-    setHotspots ([...hotspots, child])
+    setHotspots(hotspots = [child, child])
+
+  },[])
+  const addHotspotToState = () => {
+    const child = (
+      <Hotspot
+        scene={scene}
+        camera={camera}
+        renderer={renderer}
+        sphere={sphere} 
+      />
+    );
+    setHotspots([...hotspots, child])
+    // return[child, child];
     // dispatch(addHotspot(child))
     // console.log(hotspots);
-  }
-  
-
+  };
 
   return (
     <div>
-      <Button onClick = {addHotspotToState}/>
-      <div>{hotspots}</div>  
-      <div ref={sceneRef} className={styles.scene}>
+      <Button onClick={addHotspotToState} />
+      <div>
+        {/* {addHotspotToState()} */}
+        {hotspots}
       </div>
+      <div ref={sceneRef} className={styles.scene}></div>
     </div>
   );
 }

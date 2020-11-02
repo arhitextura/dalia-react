@@ -27,17 +27,17 @@ export const toScreenPosition = (obj, _camera, _renderer, _scene) => {
 export const normalizeMouseCoordinates = (_mouse, _renderer) => {
   console.log("Normalized");
   const rect = _renderer.domElement.getBoundingClientRect();
-  const x = ((_mouse.x - rect.left) / (rect.width - rect.left)) * 2 - 1;
-  const y = - ((_mouse.y - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+  // const x = ((_mouse.x - rect.left) / (rect.width - rect.left)) * 2 - 1;
+  const x = ((_mouse.x ) / (rect.width - rect.left)) * 2 - 1;
+  // const y = - ((_mouse.y - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+  const y = - ((_mouse.y) / (rect.bottom - rect.top)) * 2 + 1;
   return new Vector2(x, y)
 }
 
-export const to3DPosition = (obj, _mouse, _camera, _sphere) => {
+export const to3DPosition = (obj, _mouse, _camera, _sphere, _renderer) => {
   const raycaster = new Raycaster();
   let mouse = _mouse;
-  if (_mouse.x === parseInt(_mouse.x) && _mouse.y === parseInt(_mouse.y) && _mouse.x !== 0) {
-    mouse = normalizeMouseCoordinates(_mouse)
-  }
+  
   raycaster.setFromCamera(mouse, _camera)
 
   let intersects = raycaster.intersectObject(_sphere)
