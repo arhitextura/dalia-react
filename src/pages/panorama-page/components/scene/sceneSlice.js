@@ -23,10 +23,13 @@ export const sceneSlice = createSlice({
       addHotspot: (state, action) => {
         state.hotspots = [...state.hotspots, action.payload];
       },
+      changeTexture:(state, action) => {
+        state.texture = action.payload
+      }
     },
   });
   
-  export const { increment, decrement, addHotspot } = sceneSlice.actions;
+  export const { increment, decrement, addHotspot, changeTexture } = sceneSlice.actions;
   
   // The function below is called a thunk and allows us to perform async logic. It
   // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -37,8 +40,8 @@ export const sceneSlice = createSlice({
   // The function below is called a selector and allows us to select a value from
   // the state. Selectors can also be defined inline where they're used instead of
   // in the slice file. For example: `useSelector((state) => state.counter.value)`
-  export const sceneState = state => state.scene;
   export const selectHotspots = state => state.scene.hotspots;
+  // export const sceneTexture = state => state.scene.texture;
   
   export default sceneSlice.reducer;
   

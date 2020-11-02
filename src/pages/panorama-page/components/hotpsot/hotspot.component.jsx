@@ -25,7 +25,7 @@ class Hotspot extends Component {
     this.state = {
       rotation: 0,
     };
-    console.log(this.props);
+    console.log(this.props.scene.uuid);
     this.mousePosition = new Vector2(0.0, 0.0);
     to3DPosition(
       this.anchor,
