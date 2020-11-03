@@ -1,0 +1,43 @@
+{
+  "PROIECTE": [
+    {
+      "id": {
+        "name": "denumire_proiect",
+        "camere": {
+          "dormitor": {
+            "360": "link_imagine_360",
+            "thumbnail": "link_imagine_prezentare",
+            "hotspots": [
+              {
+                "id":"ID UNIC",
+                "obiect3D": { "x": 1, "y": 1, "z": 1 },
+                "link_camera": "thisProject/camere/bucatarie"
+              },
+              {
+                "id":"ID UNIC",
+                "obiect3D": { "x": 1, "y": 1, "z": 1 },
+                "link_camera": "thisProject/camere/wc"
+              }
+            ]
+          },
+          "bucatarie": {
+            "360": "link_imagine_360",
+            "thumbnail": "link_imagine_prezentare",
+            "hotspots": [
+              {
+                "id":"ID UNIC",
+                "obiect3D": { "x": 1, "y": 1, "z": 1 },
+                "link_camera": "thisProject/camere/dormitor"
+              },
+              {
+                "id":"ID UNIC",
+                "obiect3D": { "x": 1, "y": 1, "z": 1 },
+                "link_camera": "thisProject/camere/wc"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

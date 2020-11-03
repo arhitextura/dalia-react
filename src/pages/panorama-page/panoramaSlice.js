@@ -30,6 +30,9 @@ export const panoramaSlice = createSlice({
     getImage: (state) => {
       state.image =
         "Here we need an image path to load it with the pano package";
+    },
+    addProject: (state, action) =>{
+      state.projects = [...state.projects, action.payload]
     }
     
   },
