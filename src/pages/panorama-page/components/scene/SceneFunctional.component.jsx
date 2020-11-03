@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import Hotspot from "../hotpsot/hotspot.component";
+import Hotspot from "../hotpsot/hotspotRefractor.component";
 import Button from "../button/button.component";
 import styles from "./scene.module.scss";
 
@@ -32,6 +32,7 @@ export default function SceneFunctional() {
   //END GEOMETRY DECLARATION
 
   useEffect(() => {
+    console.log("MOUNTED");
     renderer.current.setSize(window.innerWidth, window.innerHeight);
     camera.current.target = new THREE.Vector3(0, 0, 0);
 
@@ -74,9 +75,9 @@ export default function SceneFunctional() {
     const onWindowResize = () => {
       camera.current.aspect = window.innerWidth / window.innerHeight;
       camera.current.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.current.setSize(window.innerWidth, window.innerHeight);
     };
-    console.log("MOUNTED");
+
     window.addEventListener("resize", onWindowResize, false);
     sceneRef.current.addEventListener("pointerup", onPointerUp, false);
     sceneRef.current.addEventListener("pointerdown", onPointerDown, false);
@@ -163,7 +164,8 @@ export default function SceneFunctional() {
         onClick={() => {
           changeSceneTexture(
             "https://live.staticflickr.com/65535/48299943976_67f4ae24ea_6k.jpg"
-          );
+          )
+          addHotspotToState()
         }}
       />
       <div>
