@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 export const sceneSlice = createSlice({
     name: 'scene',
     initialState: {
-      hotspots: [],
+      hotspots: [{x:-300, y:5.03, z:398}],
       texture:"https://cdn.eso.org/images/publicationjpg/vlt-mw-potw-cc-extended.jpg"
       
     },

@@ -12,10 +12,11 @@ import { PerspectiveCamera, Vector2 } from "three";
 
 export default function SceneFunctional() {
   const sceneRef = useRef(null);
-  let [hotspots, setHotspots] = useState([]);
+  let [hotspots, setHotspots] = useState(useSelector((state) => state.scene.hotspots));
 
   const dispatch = useDispatch();
   const sceneTexture = useSelector((state) => state.scene.texture);
+  
 
   //START GEOMETRY DECLARATION THREEJS
   const renderer = useRef(new THREE.WebGLRenderer({ antialias: true }));
@@ -169,7 +170,7 @@ export default function SceneFunctional() {
             renderer={renderer.current}
             sphere={sphere.current}
             key = {`hs-${i}`}
-            initialCoordinates={{x:-300, y:5.03, z: 398}}
+            initialCoordinates={elem}
           />
         })}
       </div>
