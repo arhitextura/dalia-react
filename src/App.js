@@ -1,15 +1,18 @@
 import React from 'react';
 
-import { Counter } from './features/counter/Counter';
-import './App.css';
+
+import './App.scss';
 import Panorama from './pages/panorama-page/panorama.page'
+import Menu from './components/header/menu.component.jsx'
 function App() {
   return (
     <div className="App">
-      <div className="App-header">
+      <header className="App-header">
+        <Menu>
+
+        </Menu>
+      </header>
         <Panorama/>
-        <Counter />
-      </div>
     </div>
   );
 }

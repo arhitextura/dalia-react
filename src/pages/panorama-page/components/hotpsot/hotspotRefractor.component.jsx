@@ -14,33 +14,22 @@ import {
   normalizeMouseCoordinates,
 } from "../scene/utils";
 
-
-/**
- * 
- * @param {Object} props.initialCoordinates - Saved coordinates to scene state 
- * @param {Object} props.URL - Picture URL to load when clicked
- */
 export default function Hotspot(props) {
   const domRef = useRef(null);
   let isDraggable = useRef(
     process.env.NODE_ENV === "development" ? true : false
   );
-  let geometry = new THREE.SphereBufferGeometry(10,10,10);  
+  let geometry = new THREE.SphereBufferGeometry(0.1,10,10);  
   let material = new THREE.MeshBasicMaterial({
     color:0xff0000
   })
   let anchor = useRef(new THREE.Mesh(geometry, material));
-  // let anchor = useRef(new THREE.Object3D());
-  if(props.initialCoordinates){
-    console.log("You can set here the position of the object");
-    const {initX, initY, initZ} = props.initialCoordinates;
-    anchor.current.position.set(initX, initY, initZ)
-  }
+  // let isUserInteracting = useRef(false);
   let [rotation, setRotation] = useState(0);
-  
+  // let mousePosition = useRef(new Vector2(0.0, 0.0));
 
   useEffect(() => {
-    
+
     let isUserInteracting = false;
     let mousePosition = new Vector2(0.0, 0.0);
     to3DPosition(
@@ -82,7 +71,6 @@ export default function Hotspot(props) {
     const handlePointerUp = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
-      console.log(anchor.current.position);
       isUserInteracting = false;
       domRef.current.classList.remove(styles.grabbing);
       mousePosition.copy(

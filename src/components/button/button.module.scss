@@ -1,0 +1,10 @@
+.button{
+
+    font-size: 16pt;
+    color: #FAFAFA;
+    user-select: none;
+    cursor: pointer;
+    &:hover{
+        color:#C0C0C0;
+    }
+}

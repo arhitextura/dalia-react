@@ -12,6 +12,7 @@ import { PerspectiveCamera, Vector2 } from "three";
 
 export default function SceneFunctional() {
   const sceneRef = useRef(null);
+  console.log(useSelector((state) => state.scene.hotspots));
   let [hotspots, setHotspots] = useState(useSelector((state) => state.scene.hotspots));
 
   const dispatch = useDispatch();
@@ -37,7 +38,8 @@ export default function SceneFunctional() {
 
   //Init scene and event handlers
   useEffect(() => {
-    console.log("MOUNTED");
+    console.log();
+    
     renderer.current.setSize(window.innerWidth, window.innerHeight);
     camera.current.target = new THREE.Vector3(0, 0, 0);
 
@@ -143,7 +145,7 @@ export default function SceneFunctional() {
       //   sphere={sphere.current}
       // />
     const child = (
-      {x:"0"}
+      {x:-110, y:0, z:100}
     );
     setHotspots([...hotspots, child]);
   };
@@ -170,7 +172,7 @@ export default function SceneFunctional() {
             renderer={renderer.current}
             sphere={sphere.current}
             key = {`hs-${i}`}
-            initialCoordinates={elem}
+            // initialCoordinates={elem}
           />
         })}
       </div>

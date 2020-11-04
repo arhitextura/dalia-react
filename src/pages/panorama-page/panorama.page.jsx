@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-
+import styles from './panorama.module.scss'
 //Components
-import Menu from "./components/table-menu/menu.component";
 import Scene from "./components/scene/Scene.component";
 import SmallButton from "./components/small-button/small-button.component";
 
@@ -19,8 +18,8 @@ export default function Panorama() {
   // }, [status, dispatch]);
 
   return (
-    <div>
-      <Menu />
+    <div className={styles.panorama_page}>
+
       <Scene name={"CASA SOL"} />
     </div>
   );

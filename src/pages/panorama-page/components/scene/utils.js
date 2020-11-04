@@ -43,6 +43,7 @@ export const to3DPosition = (obj, _mouse, _camera, _sphere, _renderer) => {
   let intersects = raycaster.intersectObject(_sphere)
   // console.log(intersects[0].point)
   if (intersects.length > 0) {
+    console.log(this, intersects[0].point);
     obj.position.copy(intersects[0].point)
   }
 };

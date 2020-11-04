@@ -1,11 +1,8 @@
 import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
-const initialState = {
-  image: [],
-  status: "idle",
-  error: null,
-}; 
-//Here we will call the API
+import initialState from './initialState.js'
+
+//Here we will fetch the API
 export const fetchImages = createAsyncThunk("images/fetchImages", async () => {
   const res = await axios.get("https://jsonplaceholder.typicode.com/photos")
   return res.data
