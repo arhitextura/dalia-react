@@ -10,9 +10,9 @@ import { selectHotspots } from "./sceneSlice";
 import * as THREE from "three";
 import { PerspectiveCamera, Vector2 } from "three";
 
-export default function SceneFunctional() {
+export default function Scene(props) {
   const sceneRef = useRef(null);
-  console.log(useSelector((state) => state.scene.hotspots));
+  console.log(useSelector((state) => state.panorama.projects[props.id]));
   let [hotspots, setHotspots] = useState(useSelector((state) => state.scene.hotspots));
 
   const dispatch = useDispatch();
