@@ -19,8 +19,7 @@ export default function Panorama() {
 
   return (
     <div className={styles.panorama_page}>
-
-      <Scene name={"CASA SOL"} />
+      <Scene name={"CASA SOL"} id={"SOL0000"} />
     </div>
   );
 }

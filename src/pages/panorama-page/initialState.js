@@ -7,7 +7,7 @@
 
 const initialState = {
   projects: {
-    "ProjectID": {
+    "SOL0000": {
       name: "Initial_project",
       scene: [
         {
