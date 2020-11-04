@@ -82,7 +82,6 @@ export default function Hotspot(props) {
     const handlePointerUp = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
-      console.log(anchor.current.position);
       isUserInteracting = false;
       domRef.current.classList.remove(styles.grabbing);
       mousePosition.copy(
