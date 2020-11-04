@@ -6,7 +6,6 @@
  */
 
 const initialState = {
-  
     "ID01": {
       name: "CASA SOL",
       scenes: {
