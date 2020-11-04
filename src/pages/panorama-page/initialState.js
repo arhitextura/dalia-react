@@ -6,21 +6,28 @@
  */
 
 const initialState = {
-  projects: {
-    "SOL0000": {
-      name: "Initial_project",
-      scene: [
-        {
-          id: "Scene ID",
+  
+    "ID01": {
+      name: "CASA SOL",
+      scenes: {
+        scene01: {
           title: "Scene title",
           image360: "Link to the image",
-          hotspots: [
-            { x: -300, y: 0, z: 490, linkTo: "imageLink", title: "Title" },
-          ],
+          hotspots: {
+            "ID01": { x: -300, y: 0, z: 490, linkTo: "scene04", title: "Title" },
+            "ID02": { x: -300, y: 0, z: 490, linkTo: "scene03", title: "Title" }
+          },
         },
-      ],
-    },
-  },
+        scenes02: {
+          title: "Scene title",
+          image360: "Link to the image",
+          hotspots: {
+            "ID01": { x: -300, y: 0, z: 490, linkTo: "scene01", title: "Title" },
+            "ID02": { x: -300, y: 0, z: 490, linkTo: "scene03", title: "Title" }
+          },
+        },
+      },
+    }
 };
 
 /**

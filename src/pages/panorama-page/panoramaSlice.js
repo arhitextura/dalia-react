@@ -8,29 +8,13 @@ export const fetchImages = createAsyncThunk("images/fetchImages", async () => {
   return res.data
 })
 export const panoramaSlice = createSlice({
-  name: "panorama",
+  name: "projects",
   initialState,
   reducers: {
-    increment: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1;
-    },
-    decrement: (state) => {
-      state.value -= 1;
-    },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload;
-    },
-    getImage: (state) => {
-      state.image =
-        "Here we need an image path to load it with the pano package";
-    },
+      
     addProject: (state, action) =>{
       state.projects = [...state.projects, action.payload]
-    }
+    },
     
   },
   extraReducers: {
@@ -50,9 +34,7 @@ export const panoramaSlice = createSlice({
 })
 
 export const {
-  increment,
-  decrement,
-  incrementByAmount,
+  getImage
 } = panoramaSlice.actions;
 
 export default panoramaSlice.reducer;

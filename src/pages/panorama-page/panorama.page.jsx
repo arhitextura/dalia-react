@@ -9,7 +9,7 @@ import { fetchImages } from "./panoramaSlice";
 
 export default function Panorama() {
   const dispatch = useDispatch();
-  const status = useSelector((state) => state.panorama.status);
+  const status = useSelector((state) => state.projects.status);
 
   // useEffect(() => {
   //   if (status === "idle") {
@@ -19,7 +19,7 @@ export default function Panorama() {
 
   return (
     <div className={styles.panorama_page}>
-      <Scene name={"CASA SOL"} id={"SOL0000"} />
+      <Scene name={"ID01"} id={"SOL0000"} />
     </div>
   );
 }

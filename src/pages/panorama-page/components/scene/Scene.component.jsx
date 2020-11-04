@@ -12,12 +12,14 @@ import { PerspectiveCamera, Vector2 } from "three";
 
 export default function Scene(props) {
   const sceneRef = useRef(null);
-  console.log(useSelector((state) => state.panorama.projects[props.id]));
-  let [hotspots, setHotspots] = useState(useSelector((state) => state.scene.hotspots));
-
-  const dispatch = useDispatch();
+  const scenes = useSelector((state) => state.projects[props.name].scenes)
+  console.log("projects: ", scenes);
+  let [hotspots, setHotspots] = useState(
+    useSelector((state) => state.scene.hotspots)
+  );
   const sceneTexture = useSelector((state) => state.scene.texture);
-  
+  const dispatch = useDispatch();
+
 
   //START GEOMETRY DECLARATION THREEJS
   const renderer = useRef(new THREE.WebGLRenderer({ antialias: true }));
@@ -38,13 +40,9 @@ export default function Scene(props) {
 
   //Init scene and event handlers
   useEffect(() => {
-    console.log();
-    
     renderer.current.setSize(window.innerWidth, window.innerHeight);
     camera.current.target = new THREE.Vector3(0, 0, 0);
-
     scene.current.add(sphere.current);
-
     let isUserInteracting = false;
     let onPointerDownMouseX = 0;
     let onPointerDownMouseY = 0;
@@ -54,11 +52,13 @@ export default function Scene(props) {
     let onPointerDownLat = 0;
     let phi = 0;
     let theta = 0;
+    //Events
     const onPointerMove = (event) => {
       if (event.isPrimary === false) return;
       lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
       lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
     };
+
     const onPointerUp = (event) => {
       if (event.isPrimary === false) return;
       isUserInteracting = false;
@@ -85,6 +85,7 @@ export default function Scene(props) {
       renderer.current.setSize(window.innerWidth, window.innerHeight);
     };
 
+      //Add event listeners
     window.addEventListener("resize", onWindowResize, false);
     sceneRef.current.addEventListener("pointerup", onPointerUp, false);
     sceneRef.current.addEventListener("pointerdown", onPointerDown, false);
@@ -96,6 +97,8 @@ export default function Scene(props) {
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener("mousemove", onMouseMove, false);
+    //END of Events
+
     const animate = () => {
       requestAnimationFrame(animate);
       if (isUserInteracting === false) {
@@ -113,40 +116,31 @@ export default function Scene(props) {
       renderer.current.render(scene.current, camera.current);
     };
     animate();
-    return () => console.log("Cleanup");;
+    return () => console.log("Cleanup");
   }, []);
 
-
   //Change texture Effect
+
   useEffect(() => {
-    new THREE.TextureLoader().load(sceneTexture, texture => {
-      sphere.current.material.map=texture;
-      sphere.current.material.needsUpdate = true;
-    }, 
-    xhr => {
+    new THREE.TextureLoader().load(
+      sceneTexture,
+      (texture) => {
+        sphere.current.material.map = texture;
+        sphere.current.material.needsUpdate = true;
+      },
+      (xhr) => {
         //Download Progress
-    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-    },
-    error => {
-      //Error CallBack
-      console.log("An error happened" + error);
-    }
+        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      },
+      (error) => {
+        //Error CallBack
+        console.log("An error happened" + error);
+      }
     );
-    
   }, [sceneTexture]);
 
-
   const addHotspotToState = () => {
-    // const child = (
-      // <Hotspot
-      //   scene={scene.current}
-      //   camera={camera.current}
-      //   renderer={renderer.current}
-      //   sphere={sphere.current}
-      // />
-    const child = (
-      {x:-110, y:0, z:100}
-    );
+    const child = { x: -110, y: 0, z: 100 };
     setHotspots([...hotspots, child]);
   };
 
@@ -161,19 +155,21 @@ export default function Scene(props) {
           // changeSceneTexture(
           //   "https://live.staticflickr.com/65535/48299943976_67f4ae24ea_6k.jpg"
           // )
-          addHotspotToState()
+          addHotspotToState();
         }}
       />
       <div>
-        {hotspots.map((elem,i)=>{
-          return <Hotspot
-            scene={scene.current}
-            camera={camera.current}
-            renderer={renderer.current}
-            sphere={sphere.current}
-            key = {`hs-${i}`}
-            // initialCoordinates={elem}
-          />
+        {hotspots.map((elem, i) => {
+          return (
+            <Hotspot
+              scene={scene.current}
+              camera={camera.current}
+              renderer={renderer.current}
+              sphere={sphere.current}
+              key={`hs-${i}`}
+              // initialCoordinates={elem}
+            />
+          );
         })}
       </div>
       <div ref={sceneRef} className={styles.scene}></div>

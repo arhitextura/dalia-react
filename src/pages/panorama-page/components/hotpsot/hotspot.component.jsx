@@ -38,7 +38,7 @@ export default function Hotspot(props) {
   }
   let [rotation, setRotation] = useState(0);
   
-
+  
   useEffect(() => {
     
     let isUserInteracting = false;
