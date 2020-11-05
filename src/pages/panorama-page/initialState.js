@@ -10,6 +10,7 @@ const initialState = {
       name: "CASA SOL",
       scenes: {
         scene01: {
+          isInitialScene:true,
           title: "Scene title",
           image360: "Link to the image",
           hotspots: {

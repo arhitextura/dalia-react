@@ -7,7 +7,9 @@ import { ReactComponent as Arrow } from "../../../../icons/arrow_circle_up-24px.
 import { ReactComponent as Close } from "../../../../icons/highlight_off-24px.svg";
 import { ReactComponent as Rotate } from "../../../../icons/rotate-24px.svg";
 import { ReactComponent as SceneList } from "../../../../icons/view_list-24px.svg";
+
 import SmallButton from "../small-button/small-button.component";
+import List from '../list/list.component'
 import {
   toScreenPosition,
   to3DPosition,
@@ -104,7 +106,8 @@ export default function Hotspot(props) {
     const update = () => {
       requestAnimationFrame(update);
       if (isUserInteracting) {
-        domRef.current.style.transform = `translate(-50%,-50%) translate(${mousePosition.x}px,${mousePosition.y}px)`;
+        // domRef.current.style.transform = `translate(-50%,-50%) translate(${mousePosition.x}px,${mousePosition.y}px)`;
+        domRef.current.style.transform = `translate(${mousePosition.x}px,${mousePosition.y}px)`;
       } else {
         const { posX, posY, visibility } = toScreenPosition(
           anchor.current,
@@ -112,8 +115,10 @@ export default function Hotspot(props) {
           props.renderer,
           props.scene
         );
+        const rect = domRef.current.getBoundingClientRect()
         mousePosition.set(posX, posY);
-        domRef.current.style.transform = `translate(-50%,-50%) translate(${posX}px,${posY}px)`;
+        // domRef.current.style.transform = `translate(-50%,-50%) translate(${posX}px,${posY}px)`;
+        domRef.current.style.transform = `translate(${posX-rect.width/2}px,${posY-rect.height/2}px)`;
         domRef.current.style.display = visibility;
       }
     };
@@ -122,28 +127,32 @@ export default function Hotspot(props) {
       console.log("cleanup function");
     };
   }, []);
-
+const logSomething = ()=>{
+  console.log("Click  still working");
+}
   return (
     <div
       className={`${styles.hotspot} ${isDraggable.current ? styles.grab : ""}`}
       ref={domRef}
     >
       <div>
-        <SmallButton>
-          <Close className={styles.close_button} />
-        </SmallButton>
-        <SmallButton>
-          <Rotate className={styles.rotate_button} />
-        </SmallButton>
+        <SmallButton icon={<Close className={styles.close_button} />}/>
+          
+        <SmallButton icon = {<Rotate className={styles.rotate_button} />}/>
+          
       </div>
       <Arrow
         className={styles.arrow}
         style={{ transform: `rotate(${rotation}deg)` }}
       />
       <div>
-        <SmallButton>
-          <SceneList className={styles.scene_list} />
-        </SmallButton>
+        <SmallButton.WithToggle icon = {<SceneList className={styles.scene_list} /> } >
+          <List>
+            <List.Item>
+              Scene 01
+            </List.Item>
+          </List>
+        </SmallButton.WithToggle>
       </div>
     </div>
   );

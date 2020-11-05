@@ -101,9 +101,9 @@ export default function Scene(props) {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      if (isUserInteracting === false) {
-        lon = lon + 0.01;
-      }
+      // if (isUserInteracting === false) {
+      //   lon = lon + 0.01;
+      // }
       lat = Math.max(-85, Math.min(85, lat));
       phi = THREE.MathUtils.degToRad(90 - lat);
       theta = THREE.MathUtils.degToRad(lon);
