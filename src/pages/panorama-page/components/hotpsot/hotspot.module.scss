@@ -6,8 +6,15 @@
     pointer-events: painted;
     min-width: 75px;
     min-height: 75px;
-    // background-color: rgba($color: #ff73d0, $alpha: 0.3);
+    background-color: rgba($color: #ff73d0, $alpha: 0.3);
     z-index: 100;
+    &:hover{
+        background-color: rgba($color: #ff73d0, $alpha: 0.1);
+        cursor: move;
+    }
+    &:active{
+        cursor: grabbing;
+    }
     .arrow {
         // display: block;
         margin: auto;
@@ -39,10 +46,3 @@
     }
 
 }
-.grab{
-    cursor: grab;
-}
-.grabbing{
-    cursor: grabbing;
-}
-
